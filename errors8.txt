@@ -1,0 +1,31 @@
+﻿app/api/advisor/route.ts(2,25): error TS2307: Cannot find module '@/lib/prompts' or its corresponding type declarations.
+app/health/page.tsx(4,54): error TS2307: Cannot find module '@/lib/types' or its corresponding type declarations.
+app/health/page.tsx(5,33): error TS2307: Cannot find module '@/lib/calculations' or its corresponding type declarations.
+app/health/page.tsx(6,27): error TS2307: Cannot find module '@/components/ScoreRing' or its corresponding type declarations.
+app/health/page.tsx(7,29): error TS2307: Cannot find module '@/components/InsightCard' or its corresponding type declarations.
+app/health/page.tsx(66,46): error TS2345: Argument of type '{ margin: number; filename: string; image: { type: string; quality: number; }; html2canvas: { scale: number; }; jsPDF: { unit: string; format: string; orientation: string; }; }' is not assignable to parameter of type 'Html2PdfOptions'.
+  The types of 'image.type' are incompatible between these types.
+    Type 'string' is not assignable to type '"jpeg" | "png" | "webp" | undefined'.
+app/health/page.tsx(71,15): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+app/health/page.tsx(87,12): error TS2304: Cannot find name 'Activity'.
+app/health/page.tsx(97,17): error TS2322: Type '{}' is not assignable to type 'string | number | readonly string[] | undefined'.
+app/health/page.tsx(138,38): error TS18046: 'val' is of type 'unknown'.
+app/health/page.tsx(138,67): error TS18046: 'val' is of type 'unknown'.
+app/health/page.tsx(139,23): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/health/page.tsx(144,86): error TS18046: 'val' is of type 'unknown'.
+app/health/page.tsx(144,113): error TS18046: 'val' is of type 'unknown'.
+app/layout.tsx(3,24): error TS2307: Cannot find module '@/components/Layout' or its corresponding type declarations.
+app/life-event/page.tsx(4,28): error TS2307: Cannot find module '@/lib/types' or its corresponding type declarations.
+app/life-event/page.tsx(5,36): error TS2307: Cannot find module '@/lib/calculations' or its corresponding type declarations.
+app/life-event/page.tsx(217,24): error TS2322: Type '(val: number) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType> & ((value: ValueType, name: NameType, item: TooltipPayloadEntry, index: number, payload: TooltipPayload) => ReactNode | [...])'.
+  Type '(val: number) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType>'.
+    Types of parameters 'val' and 'value' are incompatible.
+      Type 'ValueType | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
+app/tax/page.tsx(4,49): error TS2307: Cannot find module '@/lib/types' or its corresponding type declarations.
+app/tax/page.tsx(5,25): error TS2307: Cannot find module '@/lib/calculations' or its corresponding type declarations.
+app/tax/page.tsx(67,15): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+app/tax/page.tsx(94,19): error TS2322: Type '{}' is not assignable to type 'string | number | readonly string[] | undefined'.
+components/InsightCard.tsx(1,27): error TS2307: Cannot find module '@/lib/types' or its corresponding type declarations.
+components/InsightCard.tsx(17,101): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ critical: string; warning: string; good: string; }'.
+components/InsightCard.tsx(20,98): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ critical: string; warning: string; good: string; }'.
