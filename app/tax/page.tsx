@@ -6,18 +6,18 @@ import { orchestrate, AgentStep } from '@/lib/orchestrator'
 import { AgentProgress } from '@/components/AgentProgress'
 import { ContextChat } from '@/components/ContextChat'
 import { calcTax } from '@/lib/calculations'
-import { Calculator, ArrowRight, Info, CheckCircle2, TrendingUp, AlertTriangle, Link as LinkIcon, FileText, IndianRupee, Sparkles } from 'lucide-react'
+import { Calculator, ArrowRight, CheckCircle2, TrendingUp, AlertTriangle, Link as LinkIcon, FileText, IndianRupee, Sparkles } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 
-const INPUT_LABELS: Record<string, string> = {
-  annual_ctc: 'Annual CTC',
-  hra_received: 'HRA Received',
-  rent_paid: 'Rent Paid',
-  is_metro: 'Metro City?',
-  investments_80c: 'Section 80C',
-  nps_80ccd: 'NPS 80CCD(1B)',
-  home_loan_interest: 'Home Loan Interest',
-  medical_80d: 'Medical 80D',
+const labelNames: Record<keyof TaxInputs, string> = {
+  annual_ctc: 'Annual CTC (₹)',
+  hra_received: 'HRA received per year (₹)',
+  rent_paid: 'Annual rent paid (₹)',
+  is_metro: 'Metro city residence?',
+  investments_80c: '80C investments (₹)',
+  nps_80ccd: 'NPS contribution (₹)',
+  home_loan_interest: 'Home loan interest (₹)',
+  medical_80d: 'Medical insurance 80D (₹)'
 }
 
 export default function TaxWizardPage() {
@@ -121,74 +121,47 @@ export default function TaxWizardPage() {
 
   const inr = (n: number) => `₹${n.toLocaleString('en-IN')}`
 
-<<<<<<< HEAD
+  // Waterfall chart builder (from incoming branch — more informative than simple bar chart)
   const buildWaterfall = () => {
     if (!result) return []
     const top = inputs.annual_ctc
     const arr: any[] = []
-    
-    arr.push({ name: 'Gross CTC', value: [0, top], fill: '#6b7280' })
+
+    arr.push({ name: 'Gross CTC', amount: top, fill: '#1a1a2e' })
     let floor = top
-    
+
     if (result.recommended === 'old') {
       const st = 50000
       const s80c = Math.min(inputs.investments_80c, 150000)
       const ccd = Math.min(inputs.nps_80ccd, 50000)
-      const hra = Math.min(result.hra_exemption, inputs.hra_received)
+      const hra = Math.min((result as any).hra_exemption ?? 0, inputs.hra_received)
       const other = result.total_old_deductions - (st + s80c + ccd + hra)
 
       const addStep = (label: string, amt: number) => {
         if (amt > 0) {
-          arr.push({ name: label, value: [Math.max(0, floor - amt), floor], fill: '#10b981' })
           floor = Math.max(0, floor - amt)
         }
       }
-      
       addStep('Std Deduct', st)
       addStep('80C', s80c)
       addStep('80CCD', ccd)
       addStep('HRA', hra)
       addStep('Other Ded.', other > 0 ? other : 0)
-      
-      arr.push({ name: 'Taxable', value: [0, floor], fill: '#f59e0b' })
-      arr.push({ name: 'Tax Due', value: [0, result.old_tax], fill: '#ed193b' })
+
+      arr.push({ name: 'Deductions', amount: result.total_old_deductions, fill: '#16a34a' })
+      arr.push({ name: 'Taxable', amount: floor, fill: '#d97706' })
+      arr.push({ name: 'Tax Due', amount: result.old_tax, fill: '#dc2626' })
     } else {
       const st = 75000
-      arr.push({ name: 'Std Deduct', value: [Math.max(0, floor - st), floor], fill: '#10b981' })
       floor = Math.max(0, floor - st)
-      arr.push({ name: 'Taxable', value: [0, floor], fill: '#f59e0b' })
-      arr.push({ name: 'Tax Due', value: [0, result.new_tax], fill: '#ed193b' })
+      arr.push({ name: 'Std Deduct', amount: st, fill: '#16a34a' })
+      arr.push({ name: 'Taxable', amount: floor, fill: '#d97706' })
+      arr.push({ name: 'Tax Due', amount: result.new_tax, fill: '#dc2626' })
     }
     return arr
   }
 
   const chartData = buildWaterfall()
-
-  const tooltipFormatter = (value: any) => {
-    if (Array.isArray(value)) {
-      return inr(value[1] - value[0])
-    }
-    return inr(Number(value))
-  }
-
-  const labelNames: Record<keyof TaxInputs, string> = {
-    annual_ctc: 'Annual CTC (₹)',
-    hra_received: 'HRA received per year (₹)',
-    rent_paid: 'Annual rent paid (₹)',
-    is_metro: 'Metro city residence?',
-    investments_80c: '80C investments (₹)',
-    nps_80ccd: 'NPS contribution (₹)',
-    home_loan_interest: 'Home loan interest (₹)',
-    medical_80d: 'Medical insurance 80D (₹)'
-  }
-=======
-  const chartData = result ? [
-    { name: 'Gross Income', amount: inputs.annual_ctc, fill: '#1a1a2e' },
-    { name: 'Deductions', amount: result.recommended === 'old' ? result.total_old_deductions : 75000, fill: '#16a34a' },
-    { name: 'Taxable', amount: result.recommended === 'old' ? result.old_taxable : (result.new_taxable - 75000), fill: '#d97706' },
-    { name: 'Total Tax', amount: result.recommended === 'old' ? result.old_tax : result.new_tax, fill: '#dc2626' }
-  ] : []
->>>>>>> 8fb09c1 (fixed ui)
 
   return (
     <div className="space-y-8 et-fade-in">
@@ -217,13 +190,8 @@ export default function TaxWizardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-8">
           {(Object.entries(inputs) as [string, any][]).map(([k, v]) => (
             <div key={k} className="flex flex-col gap-1.5">
-<<<<<<< HEAD
-              <label className="text-xs font-semibold text-text-secondary tracking-wide flex items-center gap-1">
-                {labelNames[k as keyof TaxInputs]}
-=======
               <label className="et-label">
-                {INPUT_LABELS[k] || k.replace(/_/g, ' ')}
->>>>>>> 8fb09c1 (fixed ui)
+                {labelNames[k as keyof TaxInputs]}
               </label>
               {typeof v === 'boolean' ? (
                 <button 
@@ -468,100 +436,9 @@ export default function TaxWizardPage() {
                       </div>
                     </div>
                   </div>
-<<<<<<< HEAD
-                </div>
-
-                <div className="bg-white rounded-xl border border-border shadow-sm p-6 print:block">
-                  <h3 className="text-lg font-bold mb-6">Financial Waterfall Flow</h3>
-                  <div className="h-64 w-full">
-                     <ResponsiveContainer width="100%" height="100%">
-                       <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                         <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{fill: '#6b7280', fontSize: 13, fontWeight: 500}} />
-                         <YAxis hide />
-                         <Tooltip 
-                           formatter={tooltipFormatter}
-                           cursor={{fill: '#f9fafb'}}
-                           contentStyle={{borderRadius: '8px', border: '1px solid #e5e7eb'}}
-                         />
-                         <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                           {chartData.map((entry, index) => (
-                             <Cell key={`cell-${index}`} fill={entry.fill} />
-                           ))}
-                         </Bar>
-                       </BarChart>
-                     </ResponsiveContainer>
-                  </div>
-                </div>
-             </div>
-             
-             <div className="space-y-6">
-                <div className="bg-amber-50 rounded-lg p-4 border border-amber-200 text-sm text-amber-800 flex flex-col sm:flex-row items-start justify-between gap-3 shadow-sm">
-                   <div className="flex items-center gap-2 font-medium">
-                     <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                     <span>Breakeven point: The old regime only wins if your total deductions exceed <strong>{inr(result.breakeven_deductions)}</strong>.</span>
-                   </div>
-                </div>
-
-                <div className="bg-white rounded-xl border border-border shadow-sm p-6">
-                   <h3 className="text-lg font-bold text-text-primary flex items-center gap-2 mb-4">
-                     <TrendingUp className="w-5 h-5 text-primary" /> AI Tax Exemptions Plan
-                   </h3>
-
-                   {errorAI && (
-                     <div className="text-amber-800 text-sm font-medium">AI analysis currently unavailable.</div>
-                   )}
-
-                   {loadingAI && !errorAI && (
-                     <div className="space-y-3">
-                       {[1, 2].map(i => (
-                         <div key={i} className="animate-pulse bg-surface border border-border rounded-lg p-5 h-20 text-sm font-medium text-text-secondary flex items-center">
-                           Scanning your profile for hidden tax breaks...
-                         </div>
-                       ))}
-                     </div>
-                   )}
-
-                   {!loadingAI && missedDeductions.length === 0 && !errorAI && (
-                     <div className="bg-success/5 text-success border border-success/20 p-4 rounded-lg text-sm font-medium flex items-center gap-2">
-                       <CheckCircle2 className="w-5 h-5" /> You are fully maximizing all common tax benefits!
-                     </div>
-                   )}
-
-                   {!loadingAI && missedDeductions.length > 0 && (
-                     <div className="space-y-4">
-                       {missedDeductions.map((m: any, i: number) => (
-                         <div key={i} className="bg-surface rounded-lg border border-border p-4 transition-all hover:border-primary/50">
-                           <div className="flex items-center justify-between mb-2">
-                             <div className="flex items-center gap-2">
-                               <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-sm tracking-wider">SEC {m.section}</span>
-                               <h4 className="font-bold text-text-primary text-sm">{m.name}</h4>
-                             </div>
-                             <div className="font-bold text-success text-sm">{inr(m.tax_saving_at_30_pct)} <span className="text-[10px] text-text-secondary font-medium">SAVED</span></div>
-                           </div>
-                           <p className="text-xs text-text-secondary leading-relaxed">{m.action}</p>
-                         </div>
-                       ))}
-
-                       <div className="mt-4 border border-primary/20 bg-primary/5 rounded-lg p-4 flex items-start gap-3 shadow-inner">
-                         <div className="pt-0.5">
-                           <TrendingUp className="w-5 h-5 text-primary" />
-                         </div>
-                         <div>
-                           <h4 className="text-xs font-bold text-primary mb-1 uppercase tracking-wider">LT Wealth Impact</h4>
-                           <p className="text-xs text-text-secondary leading-relaxed">
-                             Compounded at 12% over 25 years, these savings generate <span className="font-bold text-success">{inr(Math.round(missedDeductions.reduce((a,b)=>a+(b.tax_saving_at_30_pct||0), 0) * Math.pow(1.12, 25)))}</span> in extra wealth.
-                           </p>
-                         </div>
-                       </div>
-                     </div>
-                   )}
-                </div>
-             </div>
-=======
                 )}
               </div>
             </div>
->>>>>>> 8fb09c1 (fixed ui)
           </div>
 
           {!loadingAI && (

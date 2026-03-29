@@ -39,15 +39,6 @@ const COMING_SOON = [
 
 export default function Home() {
   return (
-<<<<<<< HEAD
-    <div className="flex flex-col gap-12 py-8 animate-in fade-in duration-500">
-      <section className="text-center space-y-4 max-w-4xl mx-auto">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-primary tracking-tight leading-tight px-4 flex flex-col gap-2">
-          <span>₹1,73,000 in tax savings go unclaimed</span>
-          <span className="text-text-primary">by the average Indian salaried employee.</span>
-        </h1>
-        <p className="text-xl text-text-secondary font-medium">Find yours in 5 minutes.</p>
-=======
     <div className="et-fade-in">
       {/* Hero Section */}
       <section className="relative text-center py-16 mb-12">
@@ -94,7 +85,6 @@ export default function Home() {
             </div>
           </div>
         </div>
->>>>>>> 8fb09c1 (fixed ui)
       </section>
 
       {/* Main Feature Cards */}

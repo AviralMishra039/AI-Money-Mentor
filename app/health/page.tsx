@@ -7,23 +7,7 @@ import { orchestrate, AgentStep } from '@/lib/orchestrator'
 import { ScoreRing } from '@/components/ScoreRing'
 import { InsightCard } from '@/components/InsightCard'
 import { AgentProgress } from '@/components/AgentProgress'
-<<<<<<< HEAD
-import { FileText, Loader2, ArrowRight, Activity } from 'lucide-react'
-=======
 import { FileText, Loader2, ArrowRight, Activity, TrendingUp, IndianRupee } from 'lucide-react'
-import html2pdf from 'html2pdf.js'
->>>>>>> 8fb09c1 (fixed ui)
-
-const INPUT_LABELS: Record<string, string> = {
-  monthly_income: 'Monthly Income',
-  monthly_expenses: 'Monthly Expenses',
-  emergency_fund_months: 'Emergency Fund (months)',
-  term_insurance_lakhs: 'Term Insurance (₹L)',
-  monthly_sip: 'Monthly SIP',
-  outstanding_debt: 'Outstanding Debt',
-  age: 'Age',
-  tax_saving_yearly: 'Tax Saving (yearly)',
-}
 
 export default function HealthPage() {
   const [inputs, setInputs] = useState<HealthInputs>({
@@ -111,18 +95,6 @@ export default function HealthPage() {
   }
 
   return (
-<<<<<<< HEAD
-    <div className="space-y-8 animate-in fade-in duration-300">
-      <div className="bg-white p-6 rounded-xl border border-border shadow-sm print:hidden">
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <Activity className="w-6 h-6 text-primary" /> Money Health Checkup
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          {(Object.entries(inputs) as [string, number][]).map(([k, v]) => (
-            <div key={k} className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-text-secondary tracking-wide">
-                {labelNames[k as keyof HealthInputs]}
-=======
     <div className="space-y-8 et-fade-in">
       {/* Input Form */}
       <div className="et-panel p-8">
@@ -140,8 +112,7 @@ export default function HealthPage() {
           {(Object.entries(inputs) as [string, number][]).map(([k, v]) => (
             <div key={k} className="flex flex-col gap-1.5">
               <label className="et-label">
-                {INPUT_LABELS[k] || k.replace(/_/g, ' ')}
->>>>>>> 8fb09c1 (fixed ui)
+                {labelNames[k as keyof HealthInputs]}
               </label>
               <div className="relative">
                 {k !== 'age' && k !== 'emergency_fund_months' && (
@@ -188,18 +159,6 @@ export default function HealthPage() {
                 </button>
               )}
             </div>
-<<<<<<< HEAD
-            {!loadingAI && (
-              <button 
-                onClick={exportPDF} 
-                className="text-primary text-sm font-medium px-3 py-1.5 bg-primary/10 hover:bg-primary/20 rounded-md flex items-center transition-colors print:hidden"
-              >
-                <FileText className="w-4 h-4 mr-2" /> Export Plan
-              </button>
-            )}
-          </div>
-=======
->>>>>>> 8fb09c1 (fixed ui)
 
             <div className="flex flex-col md:flex-row gap-12 mb-0 items-center justify-center">
               <div className="shrink-0">
