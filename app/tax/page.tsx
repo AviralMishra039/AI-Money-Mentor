@@ -23,6 +23,7 @@ export default function TaxWizardPage() {
   const [loadingAI, setLoadingAI] = useState(false)
   const [errorAI, setErrorAI] = useState(false)
   const [currentStep, setCurrentStep] = useState<AgentStep | null>(null)
+  const [isArticlePrefilled, setIsArticlePrefilled] = useState(false)
 
   const handleCalculate = async (calcInputs = inputs) => {
     setResult(null)
@@ -60,6 +61,10 @@ export default function TaxWizardPage() {
         const parsed = JSON.parse(demo)
         if (parsed.feature === 'tax') {
           sessionStorage.removeItem('demo_scenario')
+          if (sessionStorage.getItem('article_referral')) {
+            sessionStorage.removeItem('article_referral')
+            setIsArticlePrefilled(true)
+          }
           const { feature, ...demoInputs } = parsed
           setInputs(demoInputs as TaxInputs)
           handleCalculate(demoInputs as TaxInputs)
@@ -76,6 +81,14 @@ export default function TaxWizardPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
+      
+      {isArticlePrefilled && (
+        <div className="bg-primary/10 border border-primary/20 text-text-primary px-4 py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm text-sm border-l-4 border-l-primary">
+           <span className="bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 uppercase tracking-wider rounded-sm mr-2">INFO</span>
+           <span className="font-semibold text-text-primary">We've prefilled your details based on your reading context from The Economic Times.</span>
+        </div>
+      )}
+
       <div className="bg-white p-6 rounded-xl border border-border shadow-sm">
         <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
           <Calculator className="w-6 h-6 text-primary" /> Tax Optimization Wizard
