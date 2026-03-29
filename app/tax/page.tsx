@@ -112,12 +112,54 @@ export default function TaxWizardPage() {
 
   const inr = (n: number) => `₹${n.toLocaleString('en-IN')}`
 
-  const chartData = result ? [
-    { name: 'Gross Income', amount: inputs.annual_ctc, fill: '#6b7280' },
-    { name: 'Deductions', amount: result.recommended === 'old' ? result.total_old_deductions : 75000, fill: '#22c55e' },
-    { name: 'Taxable', amount: result.recommended === 'old' ? result.old_taxable : (result.new_taxable - 75000), fill: '#f59e0b' },
-    { name: 'Total Tax', amount: result.recommended === 'old' ? result.old_tax : result.new_tax, fill: '#ef4444' }
-  ] : []
+  const buildWaterfall = () => {
+    if (!result) return []
+    const top = inputs.annual_ctc
+    const arr: any[] = []
+    
+    arr.push({ name: 'Gross CTC', value: [0, top], fill: '#6b7280' })
+    let floor = top
+    
+    if (result.recommended === 'old') {
+      const st = 50000
+      const s80c = Math.min(inputs.investments_80c, 150000)
+      const ccd = Math.min(inputs.nps_80ccd, 50000)
+      const hra = Math.min(result.hra_exemption, inputs.hra_received)
+      const other = result.total_old_deductions - (st + s80c + ccd + hra)
+
+      const addStep = (label: string, amt: number) => {
+        if (amt > 0) {
+          arr.push({ name: label, value: [Math.max(0, floor - amt), floor], fill: '#10b981' })
+          floor = Math.max(0, floor - amt)
+        }
+      }
+      
+      addStep('Std Deduct', st)
+      addStep('80C', s80c)
+      addStep('80CCD', ccd)
+      addStep('HRA', hra)
+      addStep('Other Ded.', other > 0 ? other : 0)
+      
+      arr.push({ name: 'Taxable', value: [0, floor], fill: '#f59e0b' })
+      arr.push({ name: 'Tax Due', value: [0, result.old_tax], fill: '#ed193b' })
+    } else {
+      const st = 75000
+      arr.push({ name: 'Std Deduct', value: [Math.max(0, floor - st), floor], fill: '#10b981' })
+      floor = Math.max(0, floor - st)
+      arr.push({ name: 'Taxable', value: [0, floor], fill: '#f59e0b' })
+      arr.push({ name: 'Tax Due', value: [0, result.new_tax], fill: '#ed193b' })
+    }
+    return arr
+  }
+
+  const chartData = buildWaterfall()
+
+  const tooltipFormatter = (value: any) => {
+    if (Array.isArray(value)) {
+      return inr(value[1] - value[0])
+    }
+    return inr(Number(value))
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -294,11 +336,11 @@ export default function TaxWizardPage() {
                          <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{fill: '#6b7280', fontSize: 13, fontWeight: 500}} />
                          <YAxis hide />
                          <Tooltip 
-                           formatter={(val: any) => inr(Number(val))}
+                           formatter={tooltipFormatter}
                            cursor={{fill: '#f9fafb'}}
                            contentStyle={{borderRadius: '8px', border: '1px solid #e5e7eb'}}
                          />
-                         <Bar dataKey="amount" radius={[6, 6, 0, 0]}>
+                         <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                            {chartData.map((entry, index) => (
                              <Cell key={`cell-${index}`} fill={entry.fill} />
                            ))}
