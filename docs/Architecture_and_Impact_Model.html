@@ -20,7 +20,7 @@
 
     @page {
       size: A4;
-      margin: 20mm 18mm;
+      margin: 0; /* Forces browser to remove its own headers/footers */
     }
 
     body {
@@ -32,10 +32,12 @@
     }
 
     .page {
-      max-width: 210mm;
+      width: 210mm;
+      min-height: 297mm;
       margin: 0 auto;
+      padding: 20mm 18mm; /* Re-apply document margins internally */
       page-break-after: always;
-      padding: 0 4mm;
+      position: relative;
     }
 
     .page:last-child { page-break-after: avoid; }
@@ -271,14 +273,10 @@
   <div class="doc-header">
     <div>
       <div class="subtitle">The Economic Times — Money Mentor</div>
+      <div></div>
       <h1>Architecture &<br>Impact Model</h1>
     </div>
-    <div class="meta">
-      Version 1.0<br>
-      March 29, 2026<br>
-      Multi-Agent AI System<br>
-      <strong>Confidential</strong>
-    </div>
+    
   </div>
 
   <h2>1. Architecture Document</h2>
@@ -392,7 +390,7 @@
 
   <div class="doc-footer">
     <div>AI Money Mentor — The Economic Times</div>
-    <div>Page 1 of 2</div>
+    <!-- <div>Page 1 of 2</div> -->
   </div>
 </div>
 
@@ -403,11 +401,7 @@
       <div class="subtitle">The Economic Times — Money Mentor</div>
       <h1>Impact Model</h1>
     </div>
-    <div class="meta">
-      Quantified Business Impact<br>
-      Back-of-Envelope Estimation<br>
-      FY 2025-26 basis
-    </div>
+   
   </div>
 
   <h2>2. Quantified Business Impact</h2>
@@ -532,7 +526,7 @@
 
   <div class="doc-footer">
     <div>AI Money Mentor — The Economic Times</div>
-    <div>Page 2 of 2</div>
+    <!-- <div>Page 2 of 2</div> -->
   </div>
 </div>
 
