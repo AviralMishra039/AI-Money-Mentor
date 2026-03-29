@@ -36,6 +36,20 @@ It runs a **5-agent orchestration pipeline** that:
 
 ---
 
+## 🎬 Video Demo
+
+Watch the full walkthrough of AI Money Mentor in action:
+
+<p align="center">
+  <a href="https://drive.google.com/file/d/1M4aTnvQfNKnNXWFcGW2CGp5kUuy_us0Q/view?usp=sharing" target="_blank">
+    <img src="https://img.shields.io/badge/▶%20Watch%20Demo-Google%20Drive-4285F4?style=for-the-badge&logo=google-drive&logoColor=white" alt="Watch Demo on Google Drive">
+  </a>
+</p>
+
+> The demo covers the full 5-agent pipeline — from homepage to tax optimization, financial health scoring, life event planning, and the real-time audit log.
+
+---
+
 ## 📸 Screenshots
 
 ### 🏠 Homepage — Premium ET Editorial Design
@@ -110,20 +124,6 @@ Select a life event (Bonus, Marriage, New Baby, Inheritance) and get an **instan
 </p>
 
 Enterprise-ready audit trail showing every agent's status, latency, and I/O signature for each session.
-
----
-
-## 🎬 Video Demo
-
-Watch the full walkthrough of AI Money Mentor in action:
-
-<p align="center">
-  <a href="https://drive.google.com/file/d/1M4aTnvQfNKnNXWFcGW2CGp5kUuy_us0Q/view?usp=sharing" target="_blank">
-    <img src="https://img.shields.io/badge/▶%20Watch%20Demo-Google%20Drive-4285F4?style=for-the-badge&logo=google-drive&logoColor=white" alt="Watch Demo on Google Drive">
-  </a>
-</p>
-
-> The demo covers the full 5-agent pipeline — from homepage to tax optimization, financial health scoring, life event planning, and the real-time audit log.
 
 ---
 
