@@ -8,7 +8,6 @@ import { ScoreRing } from '@/components/ScoreRing'
 import { InsightCard } from '@/components/InsightCard'
 import { AgentProgress } from '@/components/AgentProgress'
 import { FileText, Loader2, ArrowRight, Activity } from 'lucide-react'
-import html2pdf from 'html2pdf.js'
 
 export default function HealthPage() {
   const [inputs, setInputs] = useState<HealthInputs>({
@@ -59,16 +58,7 @@ export default function HealthPage() {
   }
 
   const exportPDF = () => {
-    if (resultRef.current) {
-      const opt: any = {
-        margin: 10,
-        filename: 'ET_Money_Mentor_Health_Plan.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      }
-      html2pdf().from(resultRef.current).set(opt).save()
-    }
+    window.print()
   }
 
   const handleInputChange = (field: keyof HealthInputs, value: string) => {
@@ -86,7 +76,7 @@ export default function HealthPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
-      <div className="bg-white p-6 rounded-xl border border-border shadow-sm">
+      <div className="bg-white p-6 rounded-xl border border-border shadow-sm print:hidden">
         <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
           <Activity className="w-6 h-6 text-primary" /> Money Health Checkup
         </h2>
@@ -127,7 +117,7 @@ export default function HealthPage() {
             {!loadingAI && (
               <button 
                 onClick={exportPDF} 
-                className="text-primary text-sm font-medium px-3 py-1.5 bg-primary/10 hover:bg-primary/20 rounded-md flex items-center transition-colors"
+                className="text-primary text-sm font-medium px-3 py-1.5 bg-primary/10 hover:bg-primary/20 rounded-md flex items-center transition-colors print:hidden"
               >
                 <FileText className="w-4 h-4 mr-2" /> Export Plan
               </button>
