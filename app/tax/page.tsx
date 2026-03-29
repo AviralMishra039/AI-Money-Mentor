@@ -112,6 +112,7 @@ export default function TaxWizardPage() {
 
   const inr = (n: number) => `₹${n.toLocaleString('en-IN')}`
 
+<<<<<<< HEAD
   const buildWaterfall = () => {
     if (!result) return []
     const top = inputs.annual_ctc
@@ -160,6 +161,25 @@ export default function TaxWizardPage() {
     }
     return inr(Number(value))
   }
+=======
+  const labelNames: Record<keyof TaxInputs, string> = {
+    annual_ctc: 'Annual CTC (₹)',
+    hra_received: 'HRA received per year (₹)',
+    rent_paid: 'Annual rent paid (₹)',
+    is_metro: 'Metro city residence?',
+    investments_80c: '80C investments (₹)',
+    nps_80ccd: 'NPS contribution (₹)',
+    home_loan_interest: 'Home loan interest (₹)',
+    medical_80d: 'Medical insurance 80D (₹)'
+  }
+
+  const chartData = result ? [
+    { name: 'Gross Income', amount: inputs.annual_ctc, fill: '#6b7280' },
+    { name: 'Deductions', amount: result.recommended === 'old' ? result.total_old_deductions : 75000, fill: '#22c55e' },
+    { name: 'Taxable', amount: result.recommended === 'old' ? result.old_taxable : (result.new_taxable - 75000), fill: '#f59e0b' },
+    { name: 'Total Tax', amount: result.recommended === 'old' ? result.old_tax : result.new_tax, fill: '#ef4444' }
+  ] : []
+>>>>>>> c577dbd8a419e7dc2a4904b1967e55d327586ac6
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -178,8 +198,8 @@ export default function TaxWizardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {(Object.entries(inputs) as [string, any][]).map(([k, v]) => (
             <div key={k} className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-text-secondary capitalize tracking-wide flex items-center gap-1">
-                {k.replace(/_/g, ' ')}
+              <label className="text-xs font-semibold text-text-secondary tracking-wide flex items-center gap-1">
+                {labelNames[k as keyof TaxInputs]}
               </label>
               {typeof v === 'boolean' ? (
                 <button 

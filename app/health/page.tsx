@@ -65,6 +65,17 @@ export default function HealthPage() {
     setInputs((prev: HealthInputs) => ({ ...prev, [field]: Number(value) || 0 }))
   }
 
+  const labelNames: Record<keyof HealthInputs, string> = {
+    monthly_income: 'Monthly Income (₹)',
+    monthly_expenses: 'Monthly Expenses (₹)',
+    emergency_fund_months: 'Emergency Fund (Months)',
+    term_insurance_lakhs: 'Term Insurance Cover (₹ Lakhs)',
+    monthly_sip: 'Monthly SIP (₹)',
+    outstanding_debt: 'Outstanding Loans (₹)',
+    age: 'Current Age',
+    tax_saving_yearly: '80C/Tax Investments (₹ / Yr)'
+  }
+
   const dimNames: Record<keyof HealthScore['dims'], string> = {
     emergency: 'Emergency Fund',
     insurance: 'Life Cover',
@@ -83,8 +94,8 @@ export default function HealthPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {(Object.entries(inputs) as [string, number][]).map(([k, v]) => (
             <div key={k} className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-text-secondary capitalize tracking-wide">
-                {k.replace(/_/g, ' ')}
+              <label className="text-xs font-semibold text-text-secondary tracking-wide">
+                {labelNames[k as keyof HealthInputs]}
               </label>
               <input 
                 type="number"
