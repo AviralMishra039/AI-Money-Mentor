@@ -6,8 +6,19 @@ import { orchestrate, AgentStep } from '@/lib/orchestrator'
 import { AgentProgress } from '@/components/AgentProgress'
 import { ContextChat } from '@/components/ContextChat'
 import { calcTax } from '@/lib/calculations'
-import { Calculator, ArrowRight, Info, CheckCircle2, TrendingUp, AlertTriangle, Link as LinkIcon, FileText } from 'lucide-react'
+import { Calculator, ArrowRight, Info, CheckCircle2, TrendingUp, AlertTriangle, Link as LinkIcon, FileText, IndianRupee, Sparkles } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+
+const INPUT_LABELS: Record<string, string> = {
+  annual_ctc: 'Annual CTC',
+  hra_received: 'HRA Received',
+  rent_paid: 'Rent Paid',
+  is_metro: 'Metro City?',
+  investments_80c: 'Section 80C',
+  nps_80ccd: 'NPS 80CCD(1B)',
+  home_loan_interest: 'Home Loan Interest',
+  medical_80d: 'Medical 80D',
+}
 
 export default function TaxWizardPage() {
   const [inputs, setInputs] = useState<TaxInputs>({
@@ -58,7 +69,6 @@ export default function TaxWizardPage() {
   }
 
   useEffect(() => {
-    // 1. Ghost Link Check
     const urlParams = new URLSearchParams(window.location.search)
     const planB64 = urlParams.get('plan')
     if (planB64) {
@@ -66,13 +76,12 @@ export default function TaxWizardPage() {
         const decoded = JSON.parse(atob(planB64))
         setInputs(decoded as TaxInputs)
         handleCalculate(decoded as TaxInputs)
-        return // Skip demo check if ghost link
+        return
       } catch (e) {
         console.error('Failed to parse ghost link')
       }
     }
 
-    // 2. Article/Demo Referral Check
     const demo = sessionStorage.getItem('demo_scenario')
     if (demo) {
       try {
@@ -112,6 +121,7 @@ export default function TaxWizardPage() {
 
   const inr = (n: number) => `₹${n.toLocaleString('en-IN')}`
 
+<<<<<<< HEAD
   const buildWaterfall = () => {
     if (!result) return []
     const top = inputs.annual_ctc
@@ -171,50 +181,79 @@ export default function TaxWizardPage() {
     home_loan_interest: 'Home loan interest (₹)',
     medical_80d: 'Medical insurance 80D (₹)'
   }
+=======
+  const chartData = result ? [
+    { name: 'Gross Income', amount: inputs.annual_ctc, fill: '#1a1a2e' },
+    { name: 'Deductions', amount: result.recommended === 'old' ? result.total_old_deductions : 75000, fill: '#16a34a' },
+    { name: 'Taxable', amount: result.recommended === 'old' ? result.old_taxable : (result.new_taxable - 75000), fill: '#d97706' },
+    { name: 'Total Tax', amount: result.recommended === 'old' ? result.old_tax : result.new_tax, fill: '#dc2626' }
+  ] : []
+>>>>>>> 8fb09c1 (fixed ui)
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-8 et-fade-in">
       
       {isArticlePrefilled && (
-        <div className="bg-primary/10 border border-primary/20 text-text-primary px-4 py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm text-sm border-l-4 border-l-primary print:hidden">
-           <span className="bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 uppercase tracking-wider rounded-sm mr-2">INFO</span>
-           <span className="font-semibold text-text-primary">We've prefilled your details based on your reading context from The Economic Times.</span>
+        <div className="et-panel p-4 border-l-[3px] border-l-primary flex items-center gap-3">
+          <span className="et-badge bg-primary text-white">Info</span>
+          <span className="text-sm font-medium text-navy">
+            We&apos;ve prefilled your details based on your reading context from The Economic Times.
+          </span>
         </div>
       )}
 
-      <div className="bg-white p-6 rounded-xl border border-border shadow-sm print:hidden">
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <Calculator className="w-6 h-6 text-primary" /> Tax Optimization Wizard
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      {/* Input Form */}
+      <div className="et-panel p-8 print:hidden">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 rounded bg-warning/10 flex items-center justify-center">
+            <Calculator className="w-5 h-5 text-warning" />
+          </div>
+          <div>
+            <h2 className="font-serif font-bold text-2xl text-navy">Tax Optimization Wizard</h2>
+            <p className="text-xs text-text-tertiary mt-0.5">FY2025-26 &middot; Compare regimes &middot; Find hidden deductions</p>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-8">
           {(Object.entries(inputs) as [string, any][]).map(([k, v]) => (
             <div key={k} className="flex flex-col gap-1.5">
+<<<<<<< HEAD
               <label className="text-xs font-semibold text-text-secondary tracking-wide flex items-center gap-1">
                 {labelNames[k as keyof TaxInputs]}
+=======
+              <label className="et-label">
+                {INPUT_LABELS[k] || k.replace(/_/g, ' ')}
+>>>>>>> 8fb09c1 (fixed ui)
               </label>
               {typeof v === 'boolean' ? (
                 <button 
                   onClick={() => handleChange(k as keyof TaxInputs, !v)}
-                  className={`w-full text-left px-3 py-2 border rounded-md text-sm transition-colors ${v ? 'bg-primary/10 border-primary text-primary font-medium' : 'bg-surface border-border'}`}
+                  className={`et-input text-left transition-colors font-medium ${
+                    v ? '!border-primary !bg-primary/5 text-primary' : ''
+                  }`}
                 >
-                  {v ? 'Yes' : 'No'}
+                  {v ? '✓ Yes' : 'No'}
                 </button>
               ) : (
-                <input 
-                  type="number"
-                  value={v === 0 ? '' : v}
-                  onChange={(e) => handleChange(k as keyof TaxInputs, e.target.value)}
-                  className="px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-surface"
-                />
+                <div className="relative">
+                  <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-tertiary" />
+                  <input 
+                    type="number"
+                    value={v === 0 ? '' : v}
+                    onChange={(e) => handleChange(k as keyof TaxInputs, e.target.value)}
+                    className="et-input !pl-8"
+                  />
+                </div>
               )}
             </div>
           ))}
         </div>
+        
         <button 
           onClick={() => handleCalculate()}
-          className="bg-primary hover:bg-primary-hover text-white font-medium px-6 py-2.5 rounded-lg flex items-center justify-center w-full sm:w-auto transition-colors"
+          className="et-btn-primary w-full sm:w-auto"
         >
-          Compare Regimes & Find Missing Tax Breaks <ArrowRight className="w-4 h-4 ml-2" />
+          Compare Regimes & Find Missing Tax Breaks <ArrowRight className="w-4 h-4" />
         </button>
       </div>
 
@@ -223,120 +262,213 @@ export default function TaxWizardPage() {
       )}
 
       {result && (
-        <div className="space-y-8 animate-in slide-in-from-bottom-8 duration-700">
+        <div className="space-y-8 et-slide-up">
           
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-6">
+          {/* Results Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-border">
             <div>
-              <h2 className="text-3xl font-black tracking-tight mb-1">Your Personal Tax Strategy</h2>
-              <p className="text-text-secondary text-sm print:hidden">Review your calculation below, adjust sliders in real-time or ask the Mentor.</p>
+              <h2 className="font-serif font-black text-3xl text-navy tracking-tight mb-1">Your Personal Tax Strategy</h2>
+              <p className="text-text-tertiary text-sm print:hidden">Adjust sliders in real-time or ask the AI Mentor.</p>
             </div>
-            <div className="flex gap-3 print:hidden">
-              <button onClick={handleShare} className="px-4 py-2 border border-border bg-surface hover:bg-white text-text-primary rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm transition-colors">
-                 <LinkIcon className="w-4 h-4" /> Share Ghost Link
+            <div className="flex gap-2 print:hidden">
+              <button onClick={handleShare} className="et-badge bg-surface-warm text-navy border border-border px-3 py-2 cursor-pointer hover:bg-white transition-colors flex items-center gap-1.5 text-xs font-bold">
+                <LinkIcon className="w-3.5 h-3.5" /> Share Link
               </button>
-              <button onClick={() => window.print()} className="px-4 py-2 bg-black hover:bg-black/80 text-white rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm transition-colors">
-                 <FileText className="w-4 h-4" /> PDF Report
+              <button onClick={() => window.print()} className="et-badge bg-navy text-white px-3 py-2 cursor-pointer hover:bg-primary transition-colors flex items-center gap-1.5 text-xs font-bold">
+                <FileText className="w-3.5 h-3.5" /> PDF Report
               </button>
             </div>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6">
-             <div className="lg:col-span-2 space-y-8">
-                <div className="bg-white rounded-xl border border-border shadow-sm p-6 space-y-4 print:hidden">
-                   <h3 className="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
-                      What-If Scenarios (Real-Time JS Engine)
-                   </h3>
-                   <div className="grid sm:grid-cols-3 gap-8">
-                      <div>
-                         <label className="flex justify-between text-sm font-bold mb-3 uppercase tracking-wider text-text-secondary text-xs">
-                           <span>Section 80C</span>
-                           <span className="text-primary">{inr(inputs.investments_80c)}</span>
-                         </label>
-                         <input type="range" min="0" max="150000" step="5000" value={inputs.investments_80c} onChange={(e) => handleSliderChange('investments_80c', Number(e.target.value))} className="w-full h-2 bg-border rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                      </div>
-                      <div>
-                         <label className="flex justify-between text-sm font-bold mb-3 uppercase tracking-wider text-text-secondary text-xs">
-                           <span>NPS 80CCD(1B)</span>
-                           <span className="text-primary">{inr(inputs.nps_80ccd)}</span>
-                         </label>
-                         <input type="range" min="0" max="50000" step="5000" value={inputs.nps_80ccd} onChange={(e) => handleSliderChange('nps_80ccd', Number(e.target.value))} className="w-full h-2 bg-border rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                      </div>
-                      <div>
-                         <label className="flex justify-between text-sm font-bold mb-3 uppercase tracking-wider text-text-secondary text-xs">
-                           <span>Health Ins. 80D</span>
-                           <span className="text-primary">{inr(inputs.medical_80d)}</span>
-                         </label>
-                         <input type="range" min="0" max="75000" step="5000" value={inputs.medical_80d} onChange={(e) => handleSliderChange('medical_80d', Number(e.target.value))} className="w-full h-2 bg-border rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                      </div>
-                   </div>
+            <div className="lg:col-span-2 space-y-6">
+              
+              {/* What-If Sliders */}
+              <div className="et-panel p-6 print:hidden">
+                <h3 className="et-section-header text-lg">What-If Scenarios</h3>
+                <div className="grid sm:grid-cols-3 gap-8">
+                  {[
+                    { key: 'investments_80c' as keyof TaxInputs, label: 'Section 80C', max: 150000 },
+                    { key: 'nps_80ccd' as keyof TaxInputs, label: 'NPS 80CCD(1B)', max: 50000 },
+                    { key: 'medical_80d' as keyof TaxInputs, label: 'Health Ins. 80D', max: 75000 },
+                  ].map(s => (
+                    <div key={s.key}>
+                      <label className="flex justify-between items-center mb-3">
+                        <span className="et-label !mb-0">{s.label}</span>
+                        <span className="text-sm font-bold text-primary">{inr(inputs[s.key] as number)}</span>
+                      </label>
+                      <input 
+                        type="range" min="0" max={s.max} step="5000" 
+                        value={inputs[s.key] as number} 
+                        onChange={(e) => handleSliderChange(s.key, Number(e.target.value))} 
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Regime Comparison */}
+              <div className="grid md:grid-cols-2 gap-0">
+                {/* Old Regime */}
+                <div className={`et-panel p-6 relative overflow-hidden ${result.recommended === 'old' ? '!border-primary ring-2 ring-primary/10' : ''}`}>
+                  {result.recommended === 'old' && (
+                    <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-bl flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Best for you
+                    </div>
+                  )}
+                  <h3 className="font-serif font-bold text-xl text-navy mb-5">Old Regime</h3>
+                  <div className="space-y-3 mb-5">
+                    <div className="flex justify-between items-center text-sm border-b border-border-light pb-2.5">
+                      <span className="text-text-tertiary">Gross Income</span>
+                      <span className="font-semibold text-navy">{inr(inputs.annual_ctc)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm border-b border-border-light pb-2.5">
+                      <span className="text-text-tertiary">Total Deductions</span>
+                      <span className="font-bold text-success">-{inr(result.total_old_deductions)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm border-b border-border-light pb-2.5">
+                      <span className="text-text-tertiary">Taxable Income</span>
+                      <span className="font-semibold text-navy">{inr(result.old_taxable)}</span>
+                    </div>
+                  </div>
+                  <div className="bg-surface-warm rounded p-4 flex justify-between items-center border border-border">
+                    <span className="font-semibold text-navy text-sm">Final Tax</span>
+                    <span className="text-2xl font-serif font-black text-danger">{inr(result.old_tax)}</span>
+                  </div>
+                  {result.recommended === 'old' && (
+                    <p className="text-success font-semibold text-sm mt-4 text-center flex items-center justify-center gap-1">
+                      <TrendingUp className="w-4 h-4" />
+                      Saves you {inr(result.saving)}!
+                    </p>
+                  )}
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Old Regime Card */}
-                  <div className={`p-6 rounded-xl border-2 transition-all relative overflow-hidden bg-white shadow-sm ${result.recommended === 'old' ? 'border-primary ring-4 ring-primary/10' : 'border-border'}`}>
-                    {result.recommended === 'old' && (
-                      <div className="absolute top-0 right-0 bg-primary text-white text-xs font-bold px-3 py-1 pb-1.5 rounded-bl-lg flex items-center shadow-sm">
-                        <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Best for you
-                      </div>
-                    )}
-                    <h3 className="text-xl font-bold mb-4">Old Regime</h3>
-                    <div className="space-y-3 mb-6">
-                      <div className="flex justify-between items-center text-sm border-b border-border pb-2">
-                        <span className="text-text-secondary flex items-center gap-1">Gross Income <Info className="w-3.5 h-3.5 opacity-50"/></span>
-                        <span className="font-semibold">{inr(inputs.annual_ctc)}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm border-b border-border pb-2">
-                        <span className="text-text-secondary">Total Deductions</span>
-                        <span className="font-semibold text-success">-{inr(result.total_old_deductions)}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm border-b border-border pb-2">
-                        <span className="text-text-secondary">Taxable Income</span>
-                        <span className="font-semibold">{inr(result.old_taxable)}</span>
-                      </div>
+                {/* New Regime */}
+                <div className={`et-panel p-6 relative overflow-hidden ${result.recommended === 'new' ? '!border-primary ring-2 ring-primary/10' : ''}`}>
+                  {result.recommended === 'new' && (
+                    <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-bl flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Best for you
                     </div>
-                    <div className="bg-surface rounded-lg p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2 border border-border">
-                      <span className="font-semibold text-text-primary">Final Tax</span>
-                      <span className="text-2xl font-bold text-danger">{inr(result.old_tax)}</span>
+                  )}
+                  <h3 className="font-serif font-bold text-xl text-navy mb-5">New Regime</h3>
+                  <div className="space-y-3 mb-5">
+                    <div className="flex justify-between items-center text-sm border-b border-border-light pb-2.5">
+                      <span className="text-text-tertiary">Gross Income</span>
+                      <span className="font-semibold text-navy">{inr(inputs.annual_ctc)}</span>
                     </div>
-                    {result.recommended === 'old' && (
-                      <p className="text-success font-medium text-sm mt-4 text-center">
-                        Saves you {inr(result.saving)} compared to the new regime!
-                      </p>
-                    )}
+                    <div className="flex justify-between items-center text-sm border-b border-border-light pb-2.5">
+                      <span className="text-text-tertiary">Standard Deduction</span>
+                      <span className="font-bold text-success">-{inr(75000)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm border-b border-border-light pb-2.5">
+                      <span className="text-text-tertiary">Taxable Income</span>
+                      <span className="font-semibold text-navy">{inr(result.new_taxable - 75000)}</span>
+                    </div>
                   </div>
+                  <div className="bg-surface-warm rounded p-4 flex justify-between items-center border border-border">
+                    <span className="font-semibold text-navy text-sm">Final Tax</span>
+                    <span className="text-2xl font-serif font-black text-danger">{inr(result.new_tax)}</span>
+                  </div>
+                  {result.recommended === 'new' && (
+                    <p className="text-success font-semibold text-sm mt-4 text-center flex items-center justify-center gap-1">
+                      <TrendingUp className="w-4 h-4" />
+                      Saves you {inr(result.saving)}!
+                    </p>
+                  )}
+                </div>
+              </div>
 
-                  {/* New Regime Card */}
-                  <div className={`p-6 rounded-xl border-2 transition-all relative overflow-hidden bg-white shadow-sm ${result.recommended === 'new' ? 'border-primary ring-4 ring-primary/10' : 'border-border'}`}>
-                    {result.recommended === 'new' && (
-                      <div className="absolute top-0 right-0 bg-primary text-white text-xs font-bold px-3 py-1 pb-1.5 rounded-bl-lg flex items-center shadow-sm">
-                        <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Best for you
+              {/* Chart */}
+              <div className="et-panel p-6">
+                <h3 className="et-section-header text-lg">Financial Waterfall</h3>
+                <div className="h-64 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{fill: '#5c5470', fontSize: 12, fontWeight: 600}} />
+                      <YAxis hide />
+                      <Tooltip 
+                        formatter={(val: any) => inr(Number(val))}
+                        cursor={{fill: '#faf8f5'}}
+                        contentStyle={{borderRadius: '2px', border: '1px solid #e8e0d8', fontFamily: 'Inter', fontSize: '13px'}}
+                      />
+                      <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right sidebar */}
+            <div className="space-y-6">
+              {/* Breakeven */}
+              <div className="et-panel p-4 border-l-[3px] border-l-warning">
+                <div className="flex items-start gap-2.5">
+                  <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+                  <p className="text-sm text-text-secondary leading-relaxed">
+                    <span className="font-bold text-navy">Breakeven Point:</span> The old regime only wins if deductions exceed <strong className="text-primary">{inr(result.breakeven_deductions)}</strong>.
+                  </p>
+                </div>
+              </div>
+
+              {/* AI Tax Plan */}
+              <div className="et-panel p-6">
+                <div className="flex items-center gap-2 mb-5">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  <h3 className="font-serif font-bold text-lg text-navy">AI Tax Plan</h3>
+                </div>
+
+                {errorAI && (
+                  <p className="text-sm font-medium text-warning">AI analysis currently unavailable.</p>
+                )}
+
+                {loadingAI && !errorAI && (
+                  <div className="space-y-3">
+                    {[1, 2].map(i => (
+                      <div key={i} className="animate-pulse bg-surface-warm border border-border rounded p-5 h-20 text-sm font-medium text-text-tertiary flex items-center">
+                        Scanning for hidden tax breaks...
                       </div>
-                    )}
-                    <h3 className="text-xl font-bold mb-4">New Regime</h3>
-                    <div className="space-y-3 mb-6">
-                      <div className="flex justify-between items-center text-sm border-b border-border pb-2">
-                        <span className="text-text-secondary flex items-center gap-1">Gross Income <Info className="w-3.5 h-3.5 opacity-50"/></span>
-                        <span className="font-semibold">{inr(inputs.annual_ctc)}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm border-b border-border pb-2">
-                        <span className="text-text-secondary">Standard Deduction</span>
-                        <span className="font-semibold text-success">-{inr(75000)}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm border-b border-border pb-2">
-                        <span className="text-text-secondary">Taxable Income</span>
-                        <span className="font-semibold">{inr(result.new_taxable - 75000)}</span>
-                      </div>
-                    </div>
-                    <div className="bg-surface rounded-lg p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2 border border-border">
-                      <span className="font-semibold text-text-primary">Final Tax</span>
-                      <span className="text-2xl font-bold text-danger">{inr(result.new_tax)}</span>
-                    </div>
-                    {result.recommended === 'new' && (
-                      <p className="text-success font-medium text-sm mt-4 text-center">
-                        Saves you {inr(result.saving)} compared to the old regime!
-                      </p>
-                    )}
+                    ))}
                   </div>
+                )}
+
+                {!loadingAI && missedDeductions.length === 0 && !errorAI && (
+                  <div className="bg-success/5 text-success border border-success/20 p-4 rounded text-sm font-medium flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5" /> Fully maximized!
+                  </div>
+                )}
+
+                {!loadingAI && missedDeductions.length > 0 && (
+                  <div className="space-y-4">
+                    {missedDeductions.map((m: any, i: number) => (
+                      <div key={i} className="bg-surface rounded border border-border p-4 transition-all hover:border-primary/30 group">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="et-badge bg-primary/10 text-primary border border-primary/20">SEC {m.section}</span>
+                            <h4 className="font-bold text-navy text-sm">{m.name}</h4>
+                          </div>
+                          <div className="font-bold text-success text-sm">{inr(m.tax_saving_at_30_pct)}</div>
+                        </div>
+                        <p className="text-xs text-text-tertiary leading-relaxed">{m.action}</p>
+                      </div>
+                    ))}
+
+                    <div className="et-panel p-4 border-l-[3px] border-l-primary bg-primary/[0.02]">
+                      <div className="flex items-start gap-3">
+                        <TrendingUp className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="et-label text-primary !mb-1">LT Wealth Impact</h4>
+                          <p className="text-xs text-text-secondary leading-relaxed">
+                            Compounded at 12% over 25 years: <span className="font-bold text-success">{inr(Math.round(missedDeductions.reduce((a,b)=>a+(b.tax_saving_at_30_pct||0), 0) * Math.pow(1.12, 25)))}</span> in extra wealth.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+<<<<<<< HEAD
                 </div>
 
                 <div className="bg-white rounded-xl border border-border shadow-sm p-6 print:block">
@@ -425,6 +557,11 @@ export default function TaxWizardPage() {
                    )}
                 </div>
              </div>
+=======
+                )}
+              </div>
+            </div>
+>>>>>>> 8fb09c1 (fixed ui)
           </div>
 
           {!loadingAI && (

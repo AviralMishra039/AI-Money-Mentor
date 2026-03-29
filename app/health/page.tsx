@@ -7,7 +7,23 @@ import { orchestrate, AgentStep } from '@/lib/orchestrator'
 import { ScoreRing } from '@/components/ScoreRing'
 import { InsightCard } from '@/components/InsightCard'
 import { AgentProgress } from '@/components/AgentProgress'
+<<<<<<< HEAD
 import { FileText, Loader2, ArrowRight, Activity } from 'lucide-react'
+=======
+import { FileText, Loader2, ArrowRight, Activity, TrendingUp, IndianRupee } from 'lucide-react'
+import html2pdf from 'html2pdf.js'
+>>>>>>> 8fb09c1 (fixed ui)
+
+const INPUT_LABELS: Record<string, string> = {
+  monthly_income: 'Monthly Income',
+  monthly_expenses: 'Monthly Expenses',
+  emergency_fund_months: 'Emergency Fund (months)',
+  term_insurance_lakhs: 'Term Insurance (₹L)',
+  monthly_sip: 'Monthly SIP',
+  outstanding_debt: 'Outstanding Debt',
+  age: 'Age',
+  tax_saving_yearly: 'Tax Saving (yearly)',
+}
 
 export default function HealthPage() {
   const [inputs, setInputs] = useState<HealthInputs>({
@@ -85,7 +101,17 @@ export default function HealthPage() {
     retirement: 'Retirement Track'
   }
 
+  const dimColors: Record<string, string> = {
+    emergency: '#7c3aed',
+    insurance: '#0891b2',
+    investments: '#16a34a',
+    debt: '#dc2626',
+    tax: '#d97706',
+    retirement: '#2563eb',
+  }
+
   return (
+<<<<<<< HEAD
     <div className="space-y-8 animate-in fade-in duration-300">
       <div className="bg-white p-6 rounded-xl border border-border shadow-sm print:hidden">
         <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
@@ -96,21 +122,47 @@ export default function HealthPage() {
             <div key={k} className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold text-text-secondary tracking-wide">
                 {labelNames[k as keyof HealthInputs]}
+=======
+    <div className="space-y-8 et-fade-in">
+      {/* Input Form */}
+      <div className="et-panel p-8">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
+            <Activity className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="font-serif font-bold text-2xl text-navy">Money Health Checkup</h2>
+            <p className="text-xs text-text-tertiary mt-0.5">AI-powered financial wellness evaluation</p>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+          {(Object.entries(inputs) as [string, number][]).map(([k, v]) => (
+            <div key={k} className="flex flex-col gap-1.5">
+              <label className="et-label">
+                {INPUT_LABELS[k] || k.replace(/_/g, ' ')}
+>>>>>>> 8fb09c1 (fixed ui)
               </label>
-              <input 
-                type="number"
-                value={v || ''}
-                onChange={(e) => handleInputChange(k as keyof HealthInputs, e.target.value)}
-                className="px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-surface"
-              />
+              <div className="relative">
+                {k !== 'age' && k !== 'emergency_fund_months' && (
+                  <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-tertiary" />
+                )}
+                <input 
+                  type="number"
+                  value={v || ''}
+                  onChange={(e) => handleInputChange(k as keyof HealthInputs, e.target.value)}
+                  className={`et-input ${k !== 'age' && k !== 'emergency_fund_months' ? '!pl-8' : ''}`}
+                />
+              </div>
             </div>
           ))}
         </div>
+        
         <button 
           onClick={handleCalculate}
-          className="bg-primary hover:bg-primary-hover text-white font-medium px-6 py-2.5 rounded-lg flex items-center justify-center w-full sm:w-auto transition-colors"
+          className="et-btn-primary w-full sm:w-auto"
         >
-          Analyse my finances <ArrowRight className="w-4 h-4 ml-2" />
+          Analyse my finances <ArrowRight className="w-4 h-4" />
         </button>
       </div>
 
@@ -119,12 +171,24 @@ export default function HealthPage() {
       )}
 
       {score && (
-        <div ref={resultRef} className="bg-white p-6 rounded-xl border border-border shadow-sm">
-          <div className="flex justify-between items-start mb-8 border-b border-border pb-6">
-            <div>
-              <h3 className="text-xl font-bold text-text-primary mb-1">Your Financial Health</h3>
-              <p className="text-sm text-text-secondary">AI-evaluated across 6 core parameters</p>
+        <div ref={resultRef} className="space-y-8 et-slide-up">
+          {/* Score Overview */}
+          <div className="et-panel p-8">
+            <div className="flex justify-between items-start mb-8 pb-6 border-b border-border">
+              <div>
+                <h3 className="et-section-header text-2xl mb-0 pb-0 after:hidden">Your Financial Health</h3>
+                <p className="text-sm text-text-tertiary mt-1">AI-evaluated across 6 core parameters</p>
+              </div>
+              {!loadingAI && (
+                <button 
+                  onClick={exportPDF} 
+                  className="et-badge bg-navy text-white px-3 py-1.5 cursor-pointer hover:bg-primary transition-colors flex items-center gap-1.5"
+                >
+                  <FileText className="w-3.5 h-3.5" /> Export Plan
+                </button>
+              )}
             </div>
+<<<<<<< HEAD
             {!loadingAI && (
               <button 
                 onClick={exportPDF} 
@@ -134,70 +198,93 @@ export default function HealthPage() {
               </button>
             )}
           </div>
+=======
+>>>>>>> 8fb09c1 (fixed ui)
 
-          <div className="flex flex-col md:flex-row gap-10 mb-10 items-center justify-center">
-            <div className="shrink-0">
-              <ScoreRing score={score.overall} />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 w-full">
-              {(Object.entries(score.dims) as [string, number][]).map(([dim, val]) => (
-                <div key={dim} className="space-y-1">
-                  <div className="flex justify-between text-sm font-medium">
-                    <span className="text-text-primary">{dimNames[dim as keyof typeof dimNames]}</span>
-                    <span className={val >= 70 ? 'text-success' : val >= 50 ? 'text-warning' : 'text-danger'}>
-                      {val}/100
-                    </span>
+            <div className="flex flex-col md:flex-row gap-12 mb-0 items-center justify-center">
+              <div className="shrink-0">
+                <ScoreRing score={score.overall} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5 w-full">
+                {(Object.entries(score.dims) as [string, number][]).map(([dim, val]) => (
+                  <div key={dim} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-semibold text-navy">{dimNames[dim as keyof typeof dimNames]}</span>
+                      <span className="font-bold" style={{ color: val >= 70 ? '#16a34a' : val >= 50 ? '#d97706' : '#dc2626' }}>
+                        {val}<span className="text-text-tertiary font-normal text-xs">/100</span>
+                      </span>
+                    </div>
+                    <div className="h-[6px] bg-surface-warm rounded-full overflow-hidden">
+                      <div 
+                        className="h-full rounded-full transition-all duration-[1200ms] ease-out"
+                        style={{ 
+                          width: `${val}%`, 
+                          backgroundColor: dimColors[dim] || (val >= 70 ? '#16a34a' : val >= 50 ? '#d97706' : '#dc2626') 
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 bg-surface rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-1000 ${val >= 70 ? 'bg-success' : val >= 50 ? 'bg-warning' : 'bg-danger'}`}
-                      style={{ width: `${val}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
+          {/* AI Insights */}
           <div className="space-y-4">
-            <h4 className="font-bold text-lg border-b border-border pb-2">AI Mentorship Actions</h4>
+            <h4 className="et-section-header text-xl">AI Mentorship Actions</h4>
+            
             {errorAI && (
-               <div className="bg-amber-50 text-amber-800 p-3 rounded-md border border-amber-200 text-sm font-medium">
-                 AI insights currently unavailable — showing calculated scores only.
-               </div>
+              <div className="et-panel p-4 border-l-[3px] border-l-warning">
+                <p className="text-sm font-medium text-warning flex items-center gap-2">
+                  <span className="et-badge bg-warning/10 text-warning border border-warning/20">Notice</span>
+                  AI insights currently unavailable — showing calculated scores only.
+                </p>
+              </div>
             )}
+            
             {loadingAI && !errorAI && (
               <div className="space-y-3">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="animate-pulse bg-surface border border-border rounded-lg p-5 h-24 flex items-center justify-center gap-2 text-text-secondary font-medium text-sm">
-                    <Loader2 className="w-5 h-5 animate-spin text-primary opacity-50" />
-                    Analyzing financial profile...
+                  <div key={i} className="et-panel p-6 flex items-center justify-center gap-3 text-text-tertiary">
+                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                    <span className="text-sm font-medium">Analyzing financial profile...</span>
                   </div>
                 ))}
               </div>
             )}
-            {!loadingAI && insights.map((insight, idx) => (
-              <InsightCard key={idx} insight={insight} />
-            ))}
+            
+            <div className="space-y-4 et-stagger">
+              {!loadingAI && insights.map((insight, idx) => (
+                <InsightCard key={idx} insight={insight} />
+              ))}
+            </div>
           </div>
 
+          {/* Wealth Projection */}
           {!loadingAI && score.overall < 70 && (
-            <div className="border border-blue-200 bg-blue-50 rounded-lg p-4 mt-8">
-              <p className="text-xs text-blue-600 font-bold uppercase tracking-widest mb-3">
-                Estimated impact if you act on these recommendations
-              </p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/60 p-3 rounded border border-blue-100/50 text-center sm:text-left">
-                  <p className="text-2xl font-bold text-blue-800">
+            <div className="et-panel overflow-hidden">
+              <div className="bg-navy px-6 py-4">
+                <p className="text-[11px] text-white/60 font-bold uppercase tracking-[0.15em] flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-primary" />
+                  Estimated Impact If You Act
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-0 divide-x divide-border">
+                <div className="p-6 text-center">
+                  <p className="text-3xl font-serif font-black text-text-secondary mb-2">
                     ₹{calculateProjectedWealth(inputs, 'before').toLocaleString('en-IN')}
                   </p>
-                  <p className="text-xs font-semibold text-blue-500 uppercase tracking-wider mt-1">Projected wealth at 60 (current path)</p>
+                  <p className="text-[11px] font-bold text-text-tertiary uppercase tracking-[0.1em]">
+                    Current Path → Age 60
+                  </p>
                 </div>
-                <div className="bg-white/60 p-3 rounded border border-blue-100/50 text-center sm:text-left">
-                  <p className="text-2xl font-bold text-success">
+                <div className="p-6 text-center bg-success/[0.03]">
+                  <p className="text-3xl font-serif font-black text-success mb-2">
                     ₹{calculateProjectedWealth(inputs, 'after').toLocaleString('en-IN')}
                   </p>
-                  <p className="text-xs font-semibold text-success/80 uppercase tracking-wider mt-1">Projected wealth at 60 (with plan)</p>
+                  <p className="text-[11px] font-bold text-success/60 uppercase tracking-[0.1em]">
+                    With Plan → Age 60
+                  </p>
                 </div>
               </div>
             </div>

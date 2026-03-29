@@ -1,8 +1,45 @@
 import Link from 'next/link'
-import { ArrowRight, Activity, Calculator, Briefcase, Lock, Glasses, Users } from 'lucide-react'
+import { ArrowRight, Activity, Calculator, Briefcase, Lock, Glasses, Users, Sparkles, Shield, Zap } from 'lucide-react'
+
+const FEATURES = [
+  {
+    href: '/health',
+    icon: Activity,
+    label: 'Money Health',
+    tagline: 'Score & Fix',
+    description: 'Calculate your financial health score across 6 core dimensions and get AI-driven personalised insights.',
+    cta: 'Start checkup',
+    accent: '#16a34a',
+  },
+  {
+    href: '/tax',
+    icon: Calculator,
+    label: 'Tax Wizard',
+    tagline: 'Save More',
+    description: 'Compare new vs old regimes instantly and let AI find your missed 80C, 80D, and HRA deductions.',
+    cta: 'Optimize tax',
+    accent: '#d97706',
+  },
+  {
+    href: '/life-event',
+    icon: Briefcase,
+    label: 'Life Event Advisor',
+    tagline: 'Plan Ahead',
+    description: 'Got a bonus? Getting married? Get instant asset allocation and next-steps for financial windfalls.',
+    cta: 'Get advice',
+    accent: '#7c3aed',
+  },
+]
+
+const COMING_SOON = [
+  { icon: Lock, label: 'FIRE Planner', desc: 'AI paths to early retirement' },
+  { icon: Glasses, label: 'MF X-Ray', desc: 'Portfolio overlap analysis' },
+  { icon: Users, label: "Couple's Planner", desc: 'Joint wealth simulation' },
+]
 
 export default function Home() {
   return (
+<<<<<<< HEAD
     <div className="flex flex-col gap-12 py-8 animate-in fade-in duration-500">
       <section className="text-center space-y-4 max-w-4xl mx-auto">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-primary tracking-tight leading-tight px-4 flex flex-col gap-2">
@@ -10,61 +47,120 @@ export default function Home() {
           <span className="text-text-primary">by the average Indian salaried employee.</span>
         </h1>
         <p className="text-xl text-text-secondary font-medium">Find yours in 5 minutes.</p>
+=======
+    <div className="et-fade-in">
+      {/* Hero Section */}
+      <section className="relative text-center py-16 mb-12">
+        {/* Decorative background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-primary/[0.04] via-transparent to-gold/[0.04] rounded-full blur-3xl" />
+        </div>
+        
+        <div className="relative max-w-3xl mx-auto space-y-6">
+          {/* ET brand tag */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-border rounded-full text-xs font-semibold text-text-secondary shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            Powered by AI &middot; Built by The Economic Times
+          </div>
+
+          <h1 className="text-5xl sm:text-6xl font-serif font-black tracking-[-0.02em] text-navy leading-[1.1]">
+            Your AI{' '}
+            <span className="et-gradient-text">Financial</span>
+            <br />
+            Mentor
+          </h1>
+
+          <p className="text-lg text-text-secondary max-w-lg mx-auto leading-relaxed">
+            95% of Indians have no financial plan. 
+            <span className="font-semibold text-text-primary"> Fix that in 5 minutes</span> with 
+            India&apos;s most trusted financial intelligence.
+          </p>
+
+          {/* Trust badges */}
+          <div className="flex items-center justify-center gap-6 pt-4">
+            <div className="flex items-center gap-1.5 text-xs font-medium text-text-tertiary">
+              <Shield className="w-3.5 h-3.5 text-success" />
+              Bank-grade encryption
+            </div>
+            <div className="w-1 h-1 rounded-full bg-border" />
+            <div className="flex items-center gap-1.5 text-xs font-medium text-text-tertiary">
+              <Zap className="w-3.5 h-3.5 text-warning" />
+              Real-time calculations
+            </div>
+            <div className="w-1 h-1 rounded-full bg-border" />
+            <div className="flex items-center gap-1.5 text-xs font-medium text-text-tertiary">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              FY 2025-26 updated
+            </div>
+          </div>
+        </div>
+>>>>>>> 8fb09c1 (fixed ui)
       </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link href="/health" className="group rounded-xl border border-border bg-white p-6 hover:border-primary hover:shadow-md transition-all">
-          <div className="w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
-            <Activity className="w-6 h-6" />
-          </div>
-          <h3 className="font-semibold text-xl mb-2 text-text-primary">Money Health</h3>
-          <p className="text-text-secondary text-sm mb-4">Calculate your financial health score across 6 core dimensions and get AI-driven insights.</p>
-          <div className="text-primary text-sm font-medium flex items-center group-hover:translate-x-1 transition-transform">
-            Start checkup <ArrowRight className="w-4 h-4 ml-1" />
-          </div>
-        </Link>
-        
-        <Link href="/tax" className="group rounded-xl border border-border bg-white p-6 hover:border-primary hover:shadow-md transition-all">
-          <div className="w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
-            <Calculator className="w-6 h-6" />
-          </div>
-          <h3 className="font-semibold text-xl mb-2 text-text-primary">Tax Wizard</h3>
-          <p className="text-text-secondary text-sm mb-4">Compare new vs old regimes instantly and let AI find your missed 80C, 80D, and HRA deductions.</p>
-          <div className="text-primary text-sm font-medium flex items-center group-hover:translate-x-1 transition-transform">
-            Optimize tax <ArrowRight className="w-4 h-4 ml-1" />
-          </div>
-        </Link>
+      {/* Main Feature Cards */}
+      <section className="mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 et-stagger">
+          {FEATURES.map((f, i) => (
+            <Link 
+              key={f.href} 
+              href={f.href} 
+              className={`group et-card p-8 flex flex-col ${i < 2 ? 'et-col-rule' : ''}`}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div 
+                  className="w-12 h-12 rounded flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                  style={{ backgroundColor: `${f.accent}10`, color: f.accent }}
+                >
+                  <f.icon className="w-6 h-6" />
+                </div>
+                <span className="et-badge bg-surface-warm text-text-tertiary border border-border">
+                  {f.tagline}
+                </span>
+              </div>
 
-        <Link href="/life-event" className="group rounded-xl border border-border bg-white p-6 hover:border-primary hover:shadow-md transition-all">
-          <div className="w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
-            <Briefcase className="w-6 h-6" />
-          </div>
-          <h3 className="font-semibold text-xl mb-2 text-text-primary">Life Event Advisor</h3>
-          <p className="text-text-secondary text-sm mb-4">Got a bonus? Getting married? Get instant asset allocation and next-steps for financial windfalls.</p>
-          <div className="text-primary text-sm font-medium flex items-center group-hover:translate-x-1 transition-transform">
-            Get advice <ArrowRight className="w-4 h-4 ml-1" />
-          </div>
-        </Link>
-      </div>
+              <h3 className="font-serif font-bold text-2xl text-navy mb-3 group-hover:text-primary transition-colors duration-300">
+                {f.label}
+              </h3>
+              <p className="text-text-secondary text-sm leading-relaxed mb-6 flex-1">
+                {f.description}
+              </p>
 
-      <section className="pt-8 border-t border-border">
-        <h2 className="text-xl font-bold text-text-primary mb-6 text-center">Coming Soon</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="rounded-xl border border-border bg-surface p-6 opacity-60 mix-blend-luminosity grayscale pointer-events-none">
-            <Lock className="w-6 h-6 text-text-secondary mb-3" />
-            <h3 className="font-semibold text-lg mb-1">FIRE Planner</h3>
-            <p className="text-xs text-text-secondary">AI paths to early retirement</p>
-          </div>
-          <div className="rounded-xl border border-border bg-surface p-6 opacity-60 mix-blend-luminosity grayscale pointer-events-none">
-            <Glasses className="w-6 h-6 text-text-secondary mb-3" />
-            <h3 className="font-semibold text-lg mb-1">MF X-Ray</h3>
-            <p className="text-xs text-text-secondary">Portfolio overlap analysis</p>
-          </div>
-          <div className="rounded-xl border border-border bg-surface p-6 opacity-60 mix-blend-luminosity grayscale pointer-events-none">
-            <Users className="w-6 h-6 text-text-secondary mb-3" />
-            <h3 className="font-semibold text-lg mb-1">Couple's Planner</h3>
-            <p className="text-xs text-text-secondary">Joint wealth simulation</p>
-          </div>
+              <div className="flex items-center text-primary text-sm font-semibold tracking-wide group-hover:gap-3 gap-1.5 transition-all duration-300">
+                {f.cta} 
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Coming Soon */}
+      <section>
+        <div className="et-divider mb-8">
+          <span className="text-xs font-bold text-text-tertiary uppercase tracking-[0.15em]">
+            Coming Soon
+          </span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 et-stagger">
+          {COMING_SOON.map((item) => (
+            <div 
+              key={item.label}
+              className="relative p-6 bg-white/50 border border-border rounded overflow-hidden group cursor-default"
+            >
+              {/* Locked overlay */}
+              <div className="absolute inset-0 bg-cream/40 backdrop-blur-[1px] z-10" />
+              <div className="relative z-0">
+                <div className="w-10 h-10 bg-surface-warm rounded flex items-center justify-center mb-4">
+                  <item.icon className="w-5 h-5 text-text-tertiary" />
+                </div>
+                <h3 className="font-serif font-bold text-lg text-navy mb-1">{item.label}</h3>
+                <p className="text-xs text-text-secondary">{item.desc}</p>
+              </div>
+              <div className="absolute top-4 right-4 z-20">
+                <Lock className="w-4 h-4 text-text-tertiary" />
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>

@@ -1,38 +1,56 @@
 import { AIInsight } from '@/lib/types'
+import { AlertTriangle, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react'
 
 export function InsightCard({ insight }: { insight: AIInsight }) {
-  const borderColors: Record<string, string> = {
-    critical: 'border-l-danger',
-    warning: 'border-l-warning',
-    good: 'border-l-success'
+  const config: Record<string, { border: string; badge: string; badgeText: string; icon: typeof AlertTriangle }> = {
+    critical: { 
+      border: 'border-l-danger', 
+      badge: 'bg-danger/10 text-danger border-danger/20', 
+      badgeText: 'Urgent',
+      icon: AlertTriangle 
+    },
+    warning: { 
+      border: 'border-l-warning', 
+      badge: 'bg-warning/10 text-warning border-warning/20', 
+      badgeText: 'Attention',
+      icon: AlertCircle 
+    },
+    good: { 
+      border: 'border-l-success', 
+      badge: 'bg-success/10 text-success border-success/20', 
+      badgeText: 'On Track',
+      icon: CheckCircle2 
+    },
   }
 
-  const badgeColors: Record<string, string> = {
-    critical: 'bg-danger/10 text-danger',
-    warning: 'bg-warning/10 text-warning',
-    good: 'bg-success/10 text-success'
-  }
+  const c = config[insight.severity] || config.warning
+  const Icon = c.icon
 
   return (
-    <div className={`bg-white rounded-lg p-5 border-y border-r border-border border-l-4 shadow-sm ${borderColors[insight.severity]}`}>
-      <div className="flex justify-between items-start mb-2">
-        <h4 className="font-medium text-text-primary text-base">{insight.title}</h4>
-        <span className={`px-2 py-0.5 rounded-full text-xs font-medium uppercase tracking-wide ${badgeColors[insight.severity]}`}>
-          {insight.severity}
-        </span>
+    <div className={`et-panel p-0 border-l-[3px] ${c.border} overflow-hidden group hover:shadow-md transition-all duration-300`}>
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2.5">
+            <Icon className="w-4 h-4 shrink-0 opacity-70" style={{ color: insight.severity === 'critical' ? '#dc2626' : insight.severity === 'good' ? '#16a34a' : '#d97706' }} />
+            <h4 className="font-serif font-bold text-navy text-base leading-snug">{insight.title}</h4>
+          </div>
+          <span className={`et-badge border shrink-0 ${c.badge}`}>
+            {c.badgeText}
+          </span>
+        </div>
+        <p className="text-text-secondary text-sm leading-relaxed mb-4 pl-[26px]">
+          {insight.description}
+        </p>
       </div>
-      <p className="text-text-secondary text-sm mb-4 leading-relaxed">
-        {insight.description}
-      </p>
       
-      <div className="bg-surface rounded-md p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-border">
-        <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-          <span className="text-sm font-medium text-text-primary">Action: {insight.specific_action}</span>
+      <div className="bg-surface-warm/50 border-t border-border px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-sm">
+          <ArrowRight className="w-3.5 h-3.5 text-primary shrink-0" />
+          <span className="font-medium text-text-primary">{insight.specific_action}</span>
         </div>
         {insight.estimated_benefit_inr && (
-          <div className="text-sm font-semibold text-success whitespace-nowrap bg-success/5 px-2.5 py-1 rounded-md">
-            Est. Benefit: ₹{insight.estimated_benefit_inr.toLocaleString('en-IN')}
+          <div className="text-sm font-bold text-success whitespace-nowrap et-badge bg-success/8 border border-success/15">
+            +₹{insight.estimated_benefit_inr.toLocaleString('en-IN')}
           </div>
         )}
       </div>
