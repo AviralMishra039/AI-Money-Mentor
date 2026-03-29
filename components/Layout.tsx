@@ -4,7 +4,7 @@ import Link from 'next/link'
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-surface flex flex-col">
-      <header className="bg-white border-b-4 border-primary shadow-sm">
+      <header className="bg-white border-b-4 border-primary shadow-sm print:hidden">
         <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
           <Link href="/" className="flex flex-col">
             <span className="font-serif font-black text-2xl tracking-tighter text-black leading-none uppercase">The Economic Times</span>

@@ -30,7 +30,6 @@ export default function ArticlePage() {
       <div className="mb-8 border-b border-border pb-6">
         <div className="flex items-center gap-2 mb-4">
           <Link href="/" className="bg-primary hover:bg-primary-hover text-white text-xs font-bold uppercase tracking-widest px-2 py-1 transition-colors">Markets</Link>
-          <Link href="/" className="text-text-secondary hover:text-primary text-xs font-semibold uppercase tracking-wider transition-colors">Mutual Funds</Link>
         </div>
         <h1 className="text-4xl font-serif font-black leading-tight text-text-primary mb-4">
           How ELSS Mutual Funds Can Save You Up To ₹46,800 Before March 31
