@@ -2,9 +2,11 @@
 
 import { useState, useRef } from 'react'
 import { HealthInputs, HealthScore, AIInsight } from '@/lib/types'
-import { calcHealthScore } from '@/lib/calculations'
+import { calcHealthScore, calculateProjectedWealth } from '@/lib/calculations'
+import { orchestrate, AgentStep } from '@/lib/orchestrator'
 import { ScoreRing } from '@/components/ScoreRing'
 import { InsightCard } from '@/components/InsightCard'
+import { AgentProgress } from '@/components/AgentProgress'
 import { FileText, Loader2, ArrowRight, Activity } from 'lucide-react'
 import html2pdf from 'html2pdf.js'
 
@@ -24,34 +26,36 @@ export default function HealthPage() {
   const [insights, setInsights] = useState<AIInsight[]>([])
   const [loadingAI, setLoadingAI] = useState(false)
   const [errorAI, setErrorAI] = useState(false)
+  const [currentStep, setCurrentStep] = useState<AgentStep | null>(null)
   const resultRef = useRef<HTMLDivElement>(null)
 
   const handleCalculate = async () => {
-    // Instant deterministic calculation
-    const calculated = calcHealthScore(inputs)
-    setScore(calculated)
+    setScore(null)
     setInsights([])
     setLoadingAI(true)
     setErrorAI(false)
+    setCurrentStep('validating')
 
-    // AI Call
-    try {
-      const res = await fetch('/api/advisor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ feature: 'health', inputs, calculated_data: calculated })
-      })
-      const data = await res.json()
-      if (data.success && data.data?.insights) {
-        setInsights(data.data.insights)
-      } else {
-        setErrorAI(true)
-      }
-    } catch {
+    const result = await orchestrate('health', inputs as any, (step) => {
+      setCurrentStep(step)
+    })
+
+    if (!result.success) {
       setErrorAI(true)
-    } finally {
       setLoadingAI(false)
+      setCurrentStep('error')
+      alert('Validation Error: ' + result.error)
+      return
     }
+
+    setScore(result.calculated_data as any)
+    
+    if (result.ai_output && result.ai_output.insights) {
+      setInsights(result.ai_output.insights as AIInsight[])
+    } else {
+      setErrorAI(true)
+    }
+    setLoadingAI(false)
   }
 
   const exportPDF = () => {
@@ -108,6 +112,10 @@ export default function HealthPage() {
           Analyse my finances <ArrowRight className="w-4 h-4 ml-2" />
         </button>
       </div>
+
+      {currentStep && currentStep !== 'error' && currentStep !== 'done' && (
+        <AgentProgress currentStep={currentStep} />
+      )}
 
       {score && (
         <div ref={resultRef} className="bg-white p-6 rounded-xl border border-border shadow-sm">
@@ -171,6 +179,28 @@ export default function HealthPage() {
               <InsightCard key={idx} insight={insight} />
             ))}
           </div>
+
+          {!loadingAI && score.overall < 70 && (
+            <div className="border border-blue-200 bg-blue-50 rounded-lg p-4 mt-8">
+              <p className="text-xs text-blue-600 font-bold uppercase tracking-widest mb-3">
+                Estimated impact if you act on these recommendations
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/60 p-3 rounded border border-blue-100/50 text-center sm:text-left">
+                  <p className="text-2xl font-bold text-blue-800">
+                    ₹{calculateProjectedWealth(inputs, 'before').toLocaleString('en-IN')}
+                  </p>
+                  <p className="text-xs font-semibold text-blue-500 uppercase tracking-wider mt-1">Projected wealth at 60 (current path)</p>
+                </div>
+                <div className="bg-white/60 p-3 rounded border border-blue-100/50 text-center sm:text-left">
+                  <p className="text-2xl font-bold text-success">
+                    ₹{calculateProjectedWealth(inputs, 'after').toLocaleString('en-IN')}
+                  </p>
+                  <p className="text-xs font-semibold text-success/80 uppercase tracking-wider mt-1">Projected wealth at 60 (with plan)</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

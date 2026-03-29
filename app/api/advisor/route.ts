@@ -9,14 +9,14 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
   try {
-    const { feature, inputs, calculated_data } = await req.json()
+    const { feature, inputs, calculated_data, model } = await req.json()
 
     if (!PROMPTS[feature as keyof typeof PROMPTS]) {
       return NextResponse.json({ success: false, error: 'Invalid feature' }, { status: 400 })
     }
 
     const response = await openai.chat.completions.create({
-      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+      model: model || process.env.GROQ_MODEL || 'llama-3.1-8b-instant',
       max_tokens: 1000,
       temperature: 0.2, // slightly lower temperature for more deterministic JSON
       response_format: { type: 'json_object' },

@@ -138,6 +138,28 @@ export function calcLifeAllocation(inputs: LifeInputs): Array<{
     { label: 'Multi-cap equity MF', percentage: inputs.risk_profile === 'aggressive' ? 45 : 30, amount: Math.round(amt * (inputs.risk_profile === 'aggressive' ? 0.45 : 0.30)), rationale: 'Core long-term wealth builder' },
     { label: 'Debt MF / bonds', percentage: inputs.risk_profile === 'aggressive' ? 15 : 30, amount: Math.round(amt * (inputs.risk_profile === 'aggressive' ? 0.15 : 0.30)), rationale: 'Better post-tax return than FD' },
     { label: 'Sovereign gold bonds', percentage: 10, amount: Math.round(amt * 0.10), rationale: 'Hedge + tax-efficient vs physical gold' },
-    { label: 'Liquid fund (keep accessible)', percentage: 25, amount: Math.round(amt * 0.25), rationale: 'Emergency + upcoming large expenses' },
   ]
 }
+
+export function calculateProjectedWealth(
+  inputs: any,
+  scenario: 'before' | 'after'
+): number {
+  // Supports HealthInputs for health feature
+  const age = inputs.age || 30
+  const years = Math.max(1, 60 - age)
+  const monthly_income = inputs.monthly_income || 0
+  const monthly_sip = inputs.monthly_sip || 0
+  
+  const monthly_investment = scenario === 'before'
+    ? monthly_sip
+    : Math.max(monthly_sip, monthly_income * 0.20)
+  
+  const annual_return = 0.12
+  const monthly_r = annual_return / 12
+  const months = years * 12
+  return Math.round(
+    monthly_investment * (Math.pow(1 + monthly_r, months) - 1) / monthly_r
+  )
+}
+

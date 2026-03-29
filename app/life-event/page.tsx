@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { LifeInputs } from '@/lib/types'
-import { calcLifeAllocation } from '@/lib/calculations'
+import { orchestrate, AgentStep } from '@/lib/orchestrator'
+import { AgentProgress } from '@/components/AgentProgress'
 import { Briefcase, Baby, Heart, Coins, ArrowRight, AlertOctagon, TrendingUp, CheckCircle2 } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 
@@ -30,6 +31,7 @@ export default function LifeEventPage() {
   const [aiAnalysis, setAiAnalysis] = useState<any>(null)
   const [loadingAI, setLoadingAI] = useState(false)
   const [errorAI, setErrorAI] = useState(false)
+  const [currentStep, setCurrentStep] = useState<AgentStep | null>(null)
 
   const handleEventSelect = (type: string) => {
     setInputs({ ...inputs, event_type: type as any })
@@ -37,30 +39,33 @@ export default function LifeEventPage() {
   }
 
   const handleCalculate = async () => {
-    const calc = calcLifeAllocation(inputs)
-    setAllocations(calc)
+    setAllocations([])
     setStep(3)
     setAiAnalysis(null)
     setLoadingAI(true)
     setErrorAI(false)
+    setCurrentStep('validating')
 
-    try {
-      const res = await fetch('/api/advisor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ feature: 'life_event', inputs, calculated_data: calc })
-      })
-      const data = await res.json()
-      if (data.success && data.data) {
-        setAiAnalysis(data.data)
-      } else {
-        setErrorAI(true)
-      }
-    } catch {
+    const res = await orchestrate('life_event', inputs as any, (step) => {
+      setCurrentStep(step)
+    })
+
+    if (!res.success) {
       setErrorAI(true)
-    } finally {
       setLoadingAI(false)
+      setCurrentStep('error')
+      alert('Validation Error: ' + res.error)
+      return
     }
+
+    setAllocations(res.calculated_data as any)
+    
+    if (res.ai_output && (res.ai_output.one_line_summary || res.ai_output.immediate_actions)) {
+      setAiAnalysis(res.ai_output)
+    } else {
+      setErrorAI(true)
+    }
+    setLoadingAI(false)
   }
 
   const COLORS = ['#1a56db', '#22c55e', '#f59e0b', '#8b5cf6', '#ef4444']
@@ -189,8 +194,15 @@ export default function LifeEventPage() {
         </div>
       )}
 
-      {step === 3 && allocations.length > 0 && (
+      {step === 3 && (
         <div className="space-y-8 animate-in slide-in-from-bottom-8 duration-700">
+          
+          {currentStep && currentStep !== 'error' && currentStep !== 'done' && (
+            <AgentProgress currentStep={currentStep} />
+          )}
+
+          {allocations.length > 0 && (
+            <div className="space-y-8">
           
           {aiAnalysis?.edge_case_note && (
              <div className="bg-danger/10 text-danger border border-danger/20 rounded-xl p-5 shadow-sm flex items-start sm:items-center gap-4">
@@ -244,6 +256,18 @@ export default function LifeEventPage() {
                  ))}
               </div>
             </div>
+
+             {!loadingAI && (
+               <div className="mt-8 border border-success/20 bg-success/5 rounded-lg p-5 shadow-inner flex items-start gap-4">
+                 <TrendingUp className="w-6 h-6 text-success shrink-0 mt-0.5" />
+                 <div>
+                   <h4 className="text-sm font-bold text-success mb-1 uppercase tracking-wide">Future Impact of Action</h4>
+                   <p className="text-sm text-text-secondary leading-relaxed">
+                     With this allocation vs keeping it in a regular savings account, your initial <span className="font-bold text-text-primary">{inr(inputs.event_amount)}</span> grows to <span className="font-bold text-success">{inr(Math.round(inputs.event_amount * Math.pow(1.10, 10)))}</span> in 10 years <span className="text-success font-semibold">({inr(Math.round(inputs.event_amount * Math.pow(1.10, 10)) - Math.round(inputs.event_amount * Math.pow(1.04, 10)))} difference)</span>.
+                   </p>
+                 </div>
+               </div>
+             )}
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6">
@@ -296,11 +320,13 @@ export default function LifeEventPage() {
                    <div className="text-sm text-text-secondary leading-relaxed p-4 bg-surface rounded-lg border border-border">
                       {loadingAI ? 'Calculating tax...' : (aiAnalysis?.tax_implications || "No immediate tax implications detected for this event.")}
                    </div>
-                </div>
-             </div>
-          </div>
+                 </div>
+              </div>
+           </div>
         </div>
       )}
+      </div>
+    )}
     </div>
   )
 }

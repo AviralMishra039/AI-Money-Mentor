@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { TaxInputs, TaxResult, AIInsight } from '@/lib/types'
-import { calcTax } from '@/lib/calculations'
+import { orchestrate, AgentStep } from '@/lib/orchestrator'
+import { AgentProgress } from '@/components/AgentProgress'
 import { Calculator, ArrowRight, Info, CheckCircle2, TrendingUp, AlertTriangle } from 'lucide-react'
 
 export default function TaxWizardPage() {
@@ -21,31 +22,35 @@ export default function TaxWizardPage() {
   const [missedDeductions, setMissedDeductions] = useState<any[]>([])
   const [loadingAI, setLoadingAI] = useState(false)
   const [errorAI, setErrorAI] = useState(false)
+  const [currentStep, setCurrentStep] = useState<AgentStep | null>(null)
 
   const handleCalculate = async (calcInputs = inputs) => {
-    const calc = calcTax(calcInputs)
-    setResult(calc)
+    setResult(null)
     setMissedDeductions([])
     setLoadingAI(true)
     setErrorAI(false)
+    setCurrentStep('validating')
 
-    try {
-      const res = await fetch('/api/advisor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ feature: 'tax', inputs: calcInputs, calculated_data: calc })
-      })
-      const data = await res.json()
-      if (data.success && data.data?.missed_deductions) {
-        setMissedDeductions(data.data.missed_deductions)
-      } else {
-        setErrorAI(true)
-      }
-    } catch {
+    const res = await orchestrate('tax', calcInputs as any, (step) => {
+      setCurrentStep(step)
+    })
+
+    if (!res.success) {
       setErrorAI(true)
-    } finally {
       setLoadingAI(false)
+      setCurrentStep('error')
+      alert('Validation Error: ' + res.error)
+      return
     }
+
+    setResult(res.calculated_data as any)
+
+    if (res.ai_output && res.ai_output.missed_deductions) {
+      setMissedDeductions(res.ai_output.missed_deductions as any[])
+    } else {
+      setErrorAI(true)
+    }
+    setLoadingAI(false)
   }
 
   useEffect(() => {
@@ -106,6 +111,10 @@ export default function TaxWizardPage() {
           Compare Regimes & Find Missing Tax Breaks <ArrowRight className="w-4 h-4 ml-2" />
         </button>
       </div>
+
+      {currentStep && currentStep !== 'error' && currentStep !== 'done' && (
+        <AgentProgress currentStep={currentStep} />
+      )}
 
       {result && (
         <div className="space-y-8">
@@ -225,6 +234,19 @@ export default function TaxWizardPage() {
                  </div>
                </div>
              ))}
+
+             {!loadingAI && missedDeductions.length > 0 && (
+               <div className="mt-6 border border-primary/20 bg-primary/5 rounded-lg p-5 flex items-start gap-4 shadow-inner">
+                 <TrendingUp className="w-6 h-6 text-primary shrink-0 mt-0.5" />
+                 <div>
+                   <h4 className="text-sm font-bold text-primary mb-1 uppercase tracking-wide">Future Impact of Action</h4>
+                   <p className="text-sm text-text-secondary leading-relaxed">
+                     At your income, acting on these deductions saves <span className="font-bold text-text-primary">{inr(missedDeductions.reduce((a,b)=>a+(b.tax_saving_at_30_pct||0), 0))}</span> this year.
+                     Invested at 12% over 25 years, that becomes <span className="font-bold text-success">{inr(Math.round(missedDeductions.reduce((a,b)=>a+(b.tax_saving_at_30_pct||0), 0) * Math.pow(1.12, 25)))}</span>.
+                   </p>
+                 </div>
+               </div>
+             )}
           </div>
 
         </div>
