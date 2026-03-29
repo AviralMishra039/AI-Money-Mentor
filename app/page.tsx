@@ -4,9 +4,12 @@ import { ArrowRight, Activity, Calculator, Briefcase, Lock, Glasses, Users } fro
 export default function Home() {
   return (
     <div className="flex flex-col gap-12 py-8 animate-in fade-in duration-500">
-      <section className="text-center space-y-4 max-w-2xl mx-auto">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-primary tracking-tight">Your AI Financial Mentor</h1>
-        <p className="text-lg text-text-secondary">95% of Indians have no financial plan. Fix that in 5 minutes.</p>
+      <section className="text-center space-y-4 max-w-4xl mx-auto">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-primary tracking-tight leading-tight px-4 flex flex-col gap-2">
+          <span>₹1,73,000 in tax savings go unclaimed</span>
+          <span className="text-text-primary">by the average Indian salaried employee.</span>
+        </h1>
+        <p className="text-xl text-text-secondary font-medium">Find yours in 5 minutes.</p>
       </section>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
